@@ -18,6 +18,18 @@ static vector<double> engFreqs = { .08167, .01492, .02782, .04253, .12702,
 
 #pragma endregion
 
+int letterCorrect(int x, int y) { //in case it wraps around Z backward
+	return ((x - y) >= 0) ? (x - y) : (x - y + 26);
+}
+
+int letterCorrectFwd(int x, int y) {
+	return ((x + y) <= 90) ? (x + y) : (x + y - 26);
+}
+
+double findStandardFreq(int x) {
+	return engFreqs.at(x);
+}
+
 void printString(std::string x) {
 	cout << x << endl;
 }
@@ -31,7 +43,7 @@ cin >> testStr;
 */
 
 
-	string testStr = "giuifg cei iprc tpnn du cei qprcni";
+	string testStr = "ASEGFUDGMVFAFW";
 
 	// convert string to upper case
 	std::for_each(testStr.begin(), testStr.end(), [](char& c) {
@@ -195,9 +207,162 @@ cin >> testStr;
 	
 	*/
 
+	vector<int> firstfreqletterints = {};
+	vector<int> secondfreqletterints = {};
+	vector<int> thirdfreqletterints = {};
+
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < letterSpare.size(); ++j) {
+			if (letterSpare[j] == topfiveCounts[i]) {
+				//cout << "Found match: " << letterSpare[j] << " with " << topfiveCounts[i] << "\n";
+				if (i == 0) firstfreqletterints.emplace_back(j);
+				else if (i == 1) secondfreqletterints.emplace_back(j);
+				else if (i == 2) thirdfreqletterints.emplace_back(j);
+			}
+		}
+	}
+
+	
+	//Show the letters of matching leading counts
+	cout << "First Highest Freq Letter Ints:\n";
+	for (size_t i = 0; i < firstfreqletterints.size(); ++i) {
+		cout << (char)(firstfreqletterints[i] + 65) << "\n";
+	}
+	cout << "\n\n\n";
+	cout << "Second Highest Freq Letter Ints:\n";
+	for (size_t i = 0; i < secondfreqletterints.size(); ++i) {
+		cout << (char)(secondfreqletterints[i] + 65) << "\n";
+	}
+	cout << "\n\n\n";
+	cout << "Third Highest Freq Letter Ints:\n";
+	for (size_t i = 0; i < thirdfreqletterints.size(); ++i) {
+		cout << (char)(thirdfreqletterints[i] + 65) << "\n";
+	}
+	cout << "\n\n\n";
+
+	double firstcoeff;
+	double secondcoeff;
+	double thirdcoeff;
+	double correlationcoeff;
+	vector<double> intervalFreqs = {};
+
+	for (int i = 0; i < 3; ++i) {
+		cout << topfiveFreqs.at(i) << "\n";
+	}
+
+	for (int i = 0; i < 26; ++i) {	//for each letter in the Alphabet
+		firstcoeff = 0.0;
+		secondcoeff = 0.0;
+		thirdcoeff = 0.0;
+		correlationcoeff = 0.0;
+
+		for (int j = 0; j < firstfreqletterints.size(); ++j) {
+			firstcoeff += findStandardFreq(letterCorrect(j,i));
+		}
+		for (int j = 0; j < secondfreqletterints.size(); ++j) {
+			secondcoeff += findStandardFreq(letterCorrect(j, i));
+		}
+		for (int j = 0; j < thirdfreqletterints.size(); ++j) {
+			thirdcoeff += findStandardFreq(letterCorrect(j, i));
+		}
+		/*
+		cout << "firstcoeff is for " << (char)(i + 65) << ": " << firstcoeff << "\n";
+		cout << "secondcoeff is for " << (char)(i + 65) << ": " << secondcoeff << "\n";
+		cout << "thirdcoeff is for " << (char)(i + 65) << ": " << thirdcoeff << "\n";
+		*/
+
+		correlationcoeff = (topfiveFreqs.at(0) * firstcoeff) + (topfiveFreqs.at(1) * secondcoeff) + (topfiveFreqs.at(2) * thirdcoeff);
+		cout << "Correlation Factor at interval " << i << ": " << correlationcoeff << "\n";
+		intervalFreqs.emplace_back(correlationcoeff);
+	}
+	cout << "\n\n\n";
+
+	int highint, sechighint, thirdhighint, fourthhighint, fifthhighint;
+	double highestratio = 0.0;
+	int highestindex = 0;
+	for (int i = 0; i < 5; ++i) {
+		for (int j = 0; j < intervalFreqs.size(); ++j) {
+			if (intervalFreqs.at(j) > highestratio) {
+				highestratio = intervalFreqs.at(j);
+				highestindex = j;
+			}
+		}
+		intervalFreqs[highestindex] = 0.0;
+		
+		if (i == 0) {
+			highint = highestindex;
+			cout << highint << "\n";
+		}
+		else if (i == 1) {
+			sechighint = highestindex; 
+			cout << sechighint << "\n";
+		}
+		else if (i == 2) {
+			thirdhighint = highestindex;
+			cout << thirdhighint << "\n";
+		}
+		else if (i == 3) {
+			fourthhighint = highestindex;
+			cout << fourthhighint << "\n";
+		}
+		else if (i == 4) {
+			fifthhighint = highestindex; 
+			cout << fifthhighint << "\n";
+		}
+
+		highestratio = 0.0;
+		highestindex = 0;
+	}
+
+	//cout << strCopy << "\n";
+	cout << "\n\n\n\n";
+	cout << "Possible Plaintext Translations:" << "\n\n";
+	
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrectFwd((int)strCopy.at(i), highint);	
+	}
+	cout << "\n\n";
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrectFwd((int)strCopy.at(i), sechighint);
+	}
+	cout << "\n\n";
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrectFwd((int)strCopy.at(i), thirdhighint);
+	}
+	cout << "\n\n";
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrectFwd((int)strCopy.at(i), fourthhighint);
+	}
+	cout << "\n\n";
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrectFwd((int)strCopy.at(i), fifthhighint);
+	}
+	cout << "\n\n";
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrect((int)strCopy.at(i), highint);
+	}
+	cout << "\n\n";
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrect((int)strCopy.at(i), sechighint);
+	}
+	cout << "\n\n";
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrect((int)strCopy.at(i), thirdhighint);
+	}
+	cout << "\n\n";
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrect((int)strCopy.at(i), fourthhighint);
+	}
+	cout << "\n\n";
+	for (int i = 0; i < strCopy.size(); ++i) {
+		cout << (char)letterCorrect((int)strCopy.at(i), fifthhighint);
+	}
+	cout << "\n\n";
+
+	
 
 
 
 	system("Pause");
 	return 0;
-}
+} 
