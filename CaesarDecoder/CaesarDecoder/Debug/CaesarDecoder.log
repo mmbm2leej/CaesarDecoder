@@ -1,0 +1,5 @@
+﻿  Source.cpp
+C:\Users\owner\source\repos\CaesarDecoder\CaesarDecoder\Source.cpp(47,19): warning C4018: '<': signed/unsigned mismatch
+C:\Users\owner\source\repos\CaesarDecoder\CaesarDecoder\Source.cpp(56,19): warning C4018: '<': signed/unsigned mismatch
+C:\Users\owner\source\repos\CaesarDecoder\CaesarDecoder\Source.cpp(59,19): warning C4018: '<': signed/unsigned mismatch
+  CaesarDecoder.vcxproj -> C:\Users\owner\source\repos\CaesarDecoder\Debug\CaesarDecoder.exe
